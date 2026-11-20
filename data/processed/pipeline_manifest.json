@@ -1,0 +1,249 @@
+{
+  "generated_at": "2026-11-19T23:09:15.952464+00:00",
+  "official_period": {
+    "start_date": "2025-01-01",
+    "end_date": "2026-12-31",
+    "label": "Janvier 2025 – Décembre 2026"
+  },
+  "outputs": {
+    "wfp_prices_clean.csv": {
+      "rows": 4779,
+      "cols": 24,
+      "columns": [
+        "date",
+        "admin1",
+        "admin2",
+        "market",
+        "market_id",
+        "latitude",
+        "longitude",
+        "category",
+        "commodity",
+        "commodity_id",
+        "unit",
+        "priceflag",
+        "pricetype",
+        "currency",
+        "price",
+        "usdprice",
+        "ym",
+        "year",
+        "month",
+        "region_std",
+        "market_display",
+        "source",
+        "is_outlier_iqr_15",
+        "is_outlier_iqr_30"
+      ],
+      "description": "Prix observés WFP strictement filtrés sur 2025-01-01 → 2026-12-31 (XOF/KG, Retail, actual)."
+    },
+    "markets_geo.csv": {
+      "rows": 47,
+      "cols": 8,
+      "columns": [
+        "market_id",
+        "market",
+        "market_display",
+        "admin1",
+        "region_std",
+        "admin2",
+        "latitude",
+        "longitude"
+      ],
+      "description": "Référentiel des marchés actifs WFP en 2025–2026 avec coordonnées GPS réelles."
+    },
+    "rt_prices_long.csv": {
+      "rows": 6630,
+      "cols": 33,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "adm1_name",
+        "region_std",
+        "adm2_name",
+        "mkt_name",
+        "market_display",
+        "geo_id",
+        "latitude",
+        "longitude",
+        "is_market_average",
+        "currency",
+        "unit",
+        "commodity_key",
+        "commodity",
+        "observed_price",
+        "has_observed_price",
+        "open_price",
+        "high_price",
+        "low_price",
+        "close_price",
+        "inflation_yoy_pct",
+        "trust_score",
+        "data_coverage",
+        "data_coverage_recent",
+        "index_confidence_score",
+        "spatially_interpolated",
+        "start_dense_data",
+        "last_survey_point",
+        "is_outlier_iqr_15",
+        "is_outlier_iqr_30"
+      ],
+      "description": "Série longue Real-Time Food Prices filtrée 2025–2026 distinguant observed_price et OHLC."
+    },
+    "rt_national_index.csv": {
+      "rows": 1105,
+      "cols": 22,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "adm1_name",
+        "region_std",
+        "mkt_name",
+        "market_display",
+        "geo_id",
+        "latitude",
+        "longitude",
+        "is_market_average",
+        "o_food_price_index",
+        "h_food_price_index",
+        "l_food_price_index",
+        "c_food_price_index",
+        "inflation_food_price_index",
+        "trust_food_price_index",
+        "data_coverage",
+        "data_coverage_recent",
+        "index_confidence_score",
+        "components"
+      ],
+      "description": "Indice composite Food Price Index Real-Time filtré 2025–2026."
+    },
+    "csa_prices_long.csv": {
+      "rows": 0,
+      "cols": 16,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "region_raw",
+        "region_std",
+        "product_code",
+        "product_label",
+        "price_stage",
+        "category",
+        "unit",
+        "currency",
+        "price",
+        "source",
+        "is_outlier_iqr_15",
+        "is_outlier_iqr_30"
+      ],
+      "description": "Feuille PRIX_kg_CONS_CSA filtrée 2025–2026 (0 ligne : arrêt source août 2022)."
+    },
+    "commodity_markets_long.csv": {
+      "rows": 0,
+      "cols": 9,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "period_type",
+        "period_label",
+        "commodity",
+        "unit",
+        "value"
+      ],
+      "description": "Feuille COURS_MAT_PREMIERE filtrée 2025–2026 (0 ligne : arrêt source août 2022)."
+    },
+    "prod_horti_long.csv": {
+      "rows": 0,
+      "cols": 8,
+      "columns": [
+        "speculation",
+        "group",
+        "is_aggregate",
+        "period_label",
+        "period_order",
+        "year_ref",
+        "unit",
+        "production_tonnes"
+      ],
+      "description": "Feuille PROD_HORTI filtrée 2025–2026 (0 ligne : arrêt source 2021/2022)."
+    },
+    "prod_elevage_long.csv": {
+      "rows": 0,
+      "cols": 10,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "metric_label",
+        "species",
+        "metric_type",
+        "unit",
+        "is_aggregate",
+        "value"
+      ],
+      "description": "Feuille PROD_ELEVAGE filtrée 2025–2026 (0 ligne : arrêt source août 2022)."
+    },
+    "senelec_long.csv": {
+      "rows": 0,
+      "cols": 9,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "section",
+        "indicator",
+        "unit",
+        "is_section_total",
+        "value"
+      ],
+      "description": "Feuille DONNEES_SENELEC filtrée 2025–2026 (0 ligne : arrêt source août 2022)."
+    },
+    "trans_aerien_long.csv": {
+      "rows": 0,
+      "cols": 11,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "table_code",
+        "airport",
+        "metric_group",
+        "indicator",
+        "unit",
+        "is_total_row",
+        "value"
+      ],
+      "description": "Feuille DONNES_TRANS_AERIEN filtrée 2025–2026 (0 ligne : arrêt source août 2022)."
+    },
+    "trans_marit_long.csv": {
+      "rows": 0,
+      "cols": 12,
+      "columns": [
+        "date",
+        "ym",
+        "year",
+        "month",
+        "period_type",
+        "period_label",
+        "direction",
+        "cargo_type",
+        "is_total_row",
+        "is_subdetail",
+        "unit",
+        "value"
+      ],
+      "description": "Feuille DONNES_TRANS_MARIT filtrée 2025–2026 (0 ligne : arrêt source août 2022)."
+    }
+  }
+}

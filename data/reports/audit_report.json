@@ -1,0 +1,397 @@
+{
+  "generated_at": "2026-11-19T23:09:15.952464+00:00",
+  "official_period": {
+    "start_date": "2025-01-01",
+    "end_date": "2026-12-31",
+    "label": "Janvier 2025 – Décembre 2026"
+  },
+  "sources": {
+    "wfp_food_prices_sen": {
+      "file": "wfp_food_prices_sen.csv",
+      "rows_raw": 50060,
+      "cols_raw": 16,
+      "raw_date_min": "2000-01-15",
+      "raw_date_max": "2026-03-15",
+      "rows_excluded_pre_2025": 45281,
+      "rows_clean": 4779,
+      "columns": [
+        "date",
+        "admin1",
+        "admin2",
+        "market",
+        "market_id",
+        "latitude",
+        "longitude",
+        "category",
+        "commodity",
+        "commodity_id",
+        "unit",
+        "priceflag",
+        "pricetype",
+        "currency",
+        "price",
+        "usdprice"
+      ],
+      "dtypes": {
+        "date": "str",
+        "admin1": "str",
+        "admin2": "str",
+        "market": "str",
+        "market_id": "int64",
+        "latitude": "float64",
+        "longitude": "float64",
+        "category": "str",
+        "commodity": "str",
+        "commodity_id": "int64",
+        "unit": "str",
+        "priceflag": "str",
+        "pricetype": "str",
+        "currency": "str",
+        "price": "float64",
+        "usdprice": "float64"
+      },
+      "missing_values": {
+        "date": 0,
+        "admin1": 0,
+        "admin2": 0,
+        "market": 0,
+        "market_id": 0,
+        "latitude": 0,
+        "longitude": 0,
+        "category": 0,
+        "commodity": 0,
+        "commodity_id": 0,
+        "unit": 0,
+        "priceflag": 0,
+        "pricetype": 0,
+        "currency": 0,
+        "price": 0,
+        "usdprice": 0
+      },
+      "total_missing_cells": 0,
+      "invalid_dates": 0,
+      "exact_duplicates": 0,
+      "key_duplicates": 0,
+      "units": {
+        "KG": 4779
+      },
+      "currencies": {
+        "XOF": 4779
+      },
+      "priceflags": {
+        "actual": 4779
+      },
+      "pricetypes": {
+        "Retail": 4779
+      },
+      "categories": {
+        "cereals and tubers": 3355,
+        "pulses and nuts": 1424
+      },
+      "commodities_count": 11,
+      "commodities": [
+        "Beans (niebe)",
+        "Groundnuts (shelled)",
+        "Groundnuts (unshelled)",
+        "Maize (imported)",
+        "Maize (local)",
+        "Millet",
+        "Rice (imported)",
+        "Rice (local)",
+        "Rice (ordinary, first quality)",
+        "Sorghum",
+        "Sorghum (imported)"
+      ],
+      "regions_count": 14,
+      "markets_count": 47,
+      "date_min": "2025-01-15",
+      "date_max": "2026-03-15",
+      "months_count": 15,
+      "months_2025_count": 12,
+      "months_2026_count": 3,
+      "available_2026_months": [
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ],
+      "missing_2026_months": [
+        "2026-04",
+        "2026-05",
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09",
+        "2026-10",
+        "2026-11",
+        "2026-12"
+      ],
+      "outliers_iqr_15": 161,
+      "outliers_iqr_30": 20,
+      "non_positive_prices": 0,
+      "notes": [
+        "Filtrage analytique strict appliqué sur la période officielle Janvier 2025 – Décembre 2026 : 4,779 observations conservées (45,281 observations antérieures à 2025 exclues sans altérer le fichier brut).",
+        "Couverture réelle 2025–2026 : 12 mois en 2025 (janv.–déc.) et 3 mois observés en 2026 (2026-01, 2026-02, 2026-03). Les mois 2026-04, 2026-05, 2026-06, 2026-07, 2026-08, 2026-09, 2026-10, 2026-11, 2026-12 sont absents de la source et ne sont jamais inventés.",
+        "Aucune valeur manquante et aucun doublon exact ou sur clé métier.",
+        "Orthographe brute 'Zigiunchor' conservée dans `market` et normalisée en 'Ziguinchor' dans `market_display`."
+      ],
+      "quality_score": 98.5
+    },
+    "real_time_food_prices": {
+      "file": "real-time-food-prices-for-senegal.csv",
+      "rows_raw": 15144,
+      "cols_raw": 879,
+      "raw_date_min": "2007-01-01",
+      "raw_date_max": "2026-05-01",
+      "rows_wide_2025_2026": 1105,
+      "rows_excluded_pre_2025": 14039,
+      "meta_cols": [
+        "ISO3",
+        "country",
+        "adm1_name",
+        "adm2_name",
+        "mkt_name",
+        "lat",
+        "lon",
+        "geo_id",
+        "DATES",
+        "year",
+        "month",
+        "currency",
+        "components",
+        "start_dense_data",
+        "last_survey_point",
+        "data_coverage",
+        "data_coverage_recent",
+        "index_confidence_score",
+        "spatially_interpolated"
+      ],
+      "populated_commodities": [
+        "maize",
+        "millet",
+        "millet_fao",
+        "rice",
+        "sorghum",
+        "sorghum_fao"
+      ],
+      "populated_cols_count": 67,
+      "empty_commodities_count": 116,
+      "empty_cols_count": 812,
+      "rows_long_clean": 6630,
+      "observed_price_rows": 2129,
+      "observed_price_rows_excl_avg": 2070,
+      "model_ohlc_rows": 6630,
+      "invalid_dates": 0,
+      "exact_duplicates": 0,
+      "key_duplicates": 0,
+      "lat_lon_nulls": 17,
+      "market_average_rows": 17,
+      "regions_count_excl_avg": 14,
+      "markets_count_excl_avg": 64,
+      "currencies": {
+        "XOF": 1105
+      },
+      "date_min": "2025-01-01",
+      "date_max": "2026-05-01",
+      "months_count": 17,
+      "months_2025_count": 12,
+      "months_2026_count": 5,
+      "available_2026_months": [
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04",
+        "2026-05"
+      ],
+      "missing_2026_months": [
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09",
+        "2026-10",
+        "2026-11",
+        "2026-12"
+      ],
+      "commodity_coverage": {
+        "maize": {
+          "observed_non_null": 522,
+          "observed_pct": 47.24,
+          "ohlc_non_null": 1105,
+          "inflation_non_null": 1105,
+          "trust_mean": 7.62
+        },
+        "millet": {
+          "observed_non_null": 556,
+          "observed_pct": 50.32,
+          "ohlc_non_null": 1105,
+          "inflation_non_null": 1105,
+          "trust_mean": 8.33
+        },
+        "millet_fao": {
+          "observed_non_null": 96,
+          "observed_pct": 8.69,
+          "ohlc_non_null": 1105,
+          "inflation_non_null": 1105,
+          "trust_mean": 8.08
+        },
+        "rice": {
+          "observed_non_null": 539,
+          "observed_pct": 48.78,
+          "ohlc_non_null": 1105,
+          "inflation_non_null": 1105,
+          "trust_mean": 7.96
+        },
+        "sorghum": {
+          "observed_non_null": 401,
+          "observed_pct": 36.29,
+          "ohlc_non_null": 1105,
+          "inflation_non_null": 1105,
+          "trust_mean": 8.37
+        },
+        "sorghum_fao": {
+          "observed_non_null": 15,
+          "observed_pct": 1.36,
+          "ohlc_non_null": 1105,
+          "inflation_non_null": 1105,
+          "trust_mean": 8.05
+        }
+      },
+      "variable_semantics": {
+        "base_column": "Prix mensuel observé / relevé direct (XOF/KG selon `components`), NaN lorsqu'aucune enquête n'est disponible ce mois.",
+        "o_h_l_c": "Estimations mensuelles modélisées Open / High / Low / Close (modèle World Bank Real-Time Food Prices). Peuvent différer du prix observé brut et comblent les mois sans enquête.",
+        "inflation_*": "Variation annuelle en % fournie par la source sur la série de clôture `c_*`.",
+        "trust_*": "Score de confiance du modèle sur la série (observé entre 5.1 et 10.0).",
+        "Market Average": "Ligne agrégée nationale (`geo_id='gid_sen_national_average'`, sans coordonnées lat/lon)."
+      },
+      "notes": [
+        "Filtrage analytique strict appliqué sur la période officielle Janvier 2025 – Décembre 2026 : 1,105 lignes larges (6,630 lignes longues, dont 2,070 relevés observés directs hors moyenne nationale). 14,039 lignes antérieures à 2025 exclues sans modifier le fichier brut.",
+        "Couverture réelle 2025–2026 : 12 mois en 2025 et 5 mois en 2026 (2026-01, 2026-02, 2026-03, 2026-04, 2026-05). Les mois 2026-06, 2026-07, 2026-08, 2026-09, 2026-10, 2026-11, 2026-12 sont absents.",
+        "812 colonnes sur 879 (92.4%) sont entièrement vides (116 produits non couverts au Sénégal).",
+        "Seuls les champs de base (`observed_price`) représentent des observations directes ; `o_`, `h_`, `l_`, `c_` sont explicitement marqués comme estimations modélisées."
+      ],
+      "quality_score": 84.0
+    },
+    "base_bulletin_xlsx": {
+      "file": "BASE_BULLETIN.xlsx",
+      "sheets_count": 7,
+      "raw_coverage": "2000–2022 (séries mensuelles 2016-01 → 2022-08)",
+      "rows_2025_2026": 0,
+      "available_in_2025_2026": false,
+      "sheets": {
+        "PRIX_kg_CONS_CSA": {
+          "rows_raw": 227,
+          "cols_raw": 82,
+          "raw_date_min": "2016-01-01",
+          "raw_date_max": "2022-08-01",
+          "columns_2025_2026_found": 0,
+          "rows_long_valid": 0,
+          "available_in_2025_2026": false,
+          "notes": [
+            "Couverture brute réelle : 2016-01-01 → 2022-08-01 (80 colonnes mensuelles).",
+            "0 colonne et 0 observation en 2025–2026. Toutes les données antérieures à janvier 2025 ont été exclues conformément à la période officielle."
+          ],
+          "quality_score": 89.0
+        },
+        "COURS_MAT_PREMIERE": {
+          "rows_raw": 25,
+          "cols_raw": 83,
+          "raw_date_min": "2016-01-01",
+          "raw_date_max": "2022-08-01",
+          "columns_2025_2026_found": 0,
+          "rows_long_valid": 0,
+          "available_in_2025_2026": false,
+          "notes": [
+            "Couverture brute réelle : 2016-01-01 → 2022-08-01.",
+            "0 colonne et 0 observation en 2025–2026. Données antérieures à 2025 strictement exclues."
+          ],
+          "quality_score": 93.5
+        },
+        "PROD_HORTI": {
+          "rows_raw": 19,
+          "periods_count": 13,
+          "raw_periods": [
+            "2000",
+            "2010",
+            "2011",
+            "2012/2013",
+            "2013/2014",
+            "2014/2015",
+            "2015/2016",
+            "2016/2017",
+            "2017/2018",
+            "2018/2019",
+            "2019/2020",
+            "2020/2021",
+            "2021/2022"
+          ],
+          "periods_2025_2026_found": [],
+          "rows_long_valid": 0,
+          "available_in_2025_2026": false,
+          "notes": [
+            "Couverture brute réelle : 2000 → 2021/2022.",
+            "Aucune campagne 2025 ou 2026 présente dans la feuille."
+          ],
+          "quality_score": 95.0
+        },
+        "PROD_ELEVAGE": {
+          "rows_raw": 15,
+          "raw_date_min": "2016-01-01",
+          "raw_date_max": "2022-08-01",
+          "columns_2025_2026_found": 0,
+          "rows_long_valid": 0,
+          "available_in_2025_2026": false,
+          "poids_total_vs_species_sum_discrepancies_gt_5T": {},
+          "notes": [
+            "Couverture brute réelle : 2016-01-01 → 2022-08-01.",
+            "0 colonne et 0 observation en 2025–2026."
+          ],
+          "quality_score": 88.0
+        },
+        "DONNEES_SENELEC": {
+          "rows_raw": 18,
+          "raw_date_min": "2016-01-01",
+          "raw_date_max": "2022-08-01",
+          "columns_2025_2026_found": 0,
+          "rows_long_valid": 0,
+          "available_in_2025_2026": false,
+          "notes": [
+            "Couverture brute réelle : 2016-01-01 → 2022-08-01.",
+            "0 colonne et 0 observation en 2025–2026."
+          ],
+          "quality_score": 96.0
+        },
+        "DONNES_TRANS_AERIEN": {
+          "rows_raw": 78,
+          "raw_date_min": "2016-01-01",
+          "raw_date_max": "2022-08-01",
+          "columns_2025_2026_found": 0,
+          "rows_long_valid": 0,
+          "available_in_2025_2026": false,
+          "notes": [
+            "Couverture brute réelle : 2016-01-01 → 2022-08-01.",
+            "0 colonne et 0 observation en 2025–2026."
+          ],
+          "quality_score": 92.0
+        },
+        "DONNES_TRANS_MARIT": {
+          "rows_raw": 12,
+          "cols_raw": 86,
+          "raw_date_min": "2016-01-01",
+          "raw_date_max": "2022-08-01",
+          "columns_2025_2026_found": 0,
+          "rows_long_valid": 0,
+          "available_in_2025_2026": false,
+          "notes": [
+            "Couverture brute réelle : 2016-01-01 → 2022-08-01 (totaux annuels 2016–2020).",
+            "0 colonne et 0 observation en 2025–2026."
+          ],
+          "quality_score": 90.5
+        }
+      },
+      "notes": [
+        "Après inspection exhaustive des 7 feuilles de BASE_BULLETIN.xlsx, aucune colonne ni observation ne correspond aux années 2025 ou 2026 (les séries mensuelles s'arrêtent en août 2022 et les campagnes horticoles en 2021/2022).",
+        "Conformément à la règle officielle (Janvier 2025 – Décembre 2026), aucune donnée antérieure à 2025 n'est exposée ni redatée artificiellement."
+      ],
+      "quality_score": 92.0
+    }
+  }
+}
