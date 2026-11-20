@@ -662,3 +662,17 @@ git push
 Render redéploie automatiquement les deux services à chaque `git push` sur la branche `main`.
 Si Render donne à l'API une adresse différente de celle attendue, modifier `VITE_API_URL` dans l'onglet *Environment* du site,
 puis lancer *Manual Deploy → Deploy latest commit*.
+
+### 20.7 Résultat de la mise en ligne (20 novembre 2026)
+
+- Dépôt GitHub public : `https://github.com/rabv2892-code/foodprice-senegal` (branche `main`, commit `ca5b053`).
+- Blueprint Render `foodprice-senegal` créé à partir de `render.yaml` : deux services gratuits.
+- **Site** : `https://foodprice-senegal.onrender.com` ; **API** : `https://foodprice-senegal-api.onrender.com` (aucun suffixe ajouté par Render,
+  donc aucune modification de `VITE_API_URL` ni de CORS n'a été nécessaire).
+- Journal Render de l'API : démarrage réussi, vérification `/health` = 200, « Your service is live ».
+- Tests réalisés sur les adresses publiques : `/health` = 200 (5 marchés, 11 produits, 15 mois observés) ; `/docs` = 404 ;
+  les 7 routes `/api/...` et les exports PDF (314 Ko), Excel (30 Ko) et CSV (46 Ko) = 200 ; CORS accepté pour l'adresse du site et refusé
+  pour une autre ; les 6 pages du site se chargent avec leurs graphiques ; le changement de produit sur la page Prévisions recalcule
+  le modèle (Mil : ARIMA(1, 1, 0) ; Riz importé : Holt-Winters) ; aucun appel à `localhost`.
+- Observations : le premier calcul d'une prévision peut durer une dizaine de secondes sur l'offre gratuite (processeur partagé), puis
+  le résultat est mémorisé. Après 15 minutes d'inactivité, l'API se met en veille et le premier accès prend environ une minute.
