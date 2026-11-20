@@ -2,6 +2,7 @@ import React from "react";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { obtenir, reglages } from "../api/client";
 import { AppRoutes } from "../App";
 import { fcfa, nombre, pourcent, pValeur } from "../lib/format";
 
@@ -33,6 +34,7 @@ const REPONSES: Record<string, unknown> = {
 };
 
 beforeEach(() => {
+  reglages.delaiEntreTentatives = 0;
   vi.stubGlobal(
     "fetch",
     vi.fn((url: string) => {
@@ -104,5 +106,30 @@ describe("Formats français", () => {
     expect(pourcent(3, 1, true)).toBe("+3,0\u00a0%");
     expect(pValeur(0)).toBe("< 0,0001");
     expect(nombre(null)).toBe("—");
+  });
+});
+
+describe("Appels à l'API", () => {
+  it("recommence quand le serveur est en train de démarrer (503) puis réussit", async () => {
+    const appels = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 503, json: () => Promise.resolve({}) })
+      .mockResolvedValueOnce({ ok: true, status: 200, json: () => Promise.resolve({ ok: 1 }) });
+    vi.stubGlobal("fetch", appels);
+    await expect(obtenir("options")).resolves.toEqual({ ok: 1 });
+    expect(appels).toHaveBeenCalledTimes(2);
+  });
+
+  it("ne recommence pas pour une erreur 404 et renvoie un message en français", async () => {
+    const appels = vi.fn().mockResolvedValue({ ok: false, status: 404, json: () => Promise.resolve({}) });
+    vi.stubGlobal("fetch", appels);
+    await expect(obtenir("inconnu")).rejects.toThrow("code 404");
+    expect(appels).toHaveBeenCalledTimes(1);
+  });
+
+  it("utilise une adresse relative en l'absence de VITE_API_URL", async () => {
+    const appels = vi.fn().mockResolvedValue({ ok: true, status: 200, json: () => Promise.resolve({}) });
+    vi.stubGlobal("fetch", appels);
+    await obtenir("options", { produit: "Mil" });
+    expect(String(appels.mock.calls[0][0])).toBe("/api/options?produit=Mil");
   });
 });

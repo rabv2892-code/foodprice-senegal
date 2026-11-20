@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { BarChart3, BookOpen, GitCompare, LayoutDashboard, LineChart, Menu, Sigma, X } from "lucide-react";
 import { useSelection } from "../context/SelectionContext";
-import { Erreur } from "./ui";
+import { Chargement, Erreur } from "./ui";
 
 export const MENU = [
   { chemin: "/", libelle: "Tableau de bord", icone: LayoutDashboard },
@@ -12,6 +12,25 @@ export const MENU = [
   { chemin: "/previsions", libelle: "Prévisions IA", icone: BarChart3 },
   { chemin: "/guide", libelle: "Guide d'utilisation", icone: BookOpen },
 ];
+
+/** Attente du serveur : après quelques secondes, on explique qu'un serveur gratuit peut mettre du temps à se réveiller. */
+const AttenteServeur: React.FC = () => {
+  const [long, setLong] = useState(false);
+  useEffect(() => {
+    const minuteur = setTimeout(() => setLong(true), 4000);
+    return () => clearTimeout(minuteur);
+  }, []);
+  return (
+    <>
+      <Chargement />
+      {long && (
+        <p className="mt-3 text-center text-sm text-gris-500">
+          Le serveur est en train de démarrer, cela peut prendre jusqu'à une minute. Merci de patienter, la page se chargera toute seule.
+        </p>
+      )}
+    </>
+  );
+};
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [ouvert, setOuvert] = useState(false);
@@ -66,7 +85,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </header>
       {ouvert && <div className="lg:hidden">{barre}</div>}
 
-      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">{erreur ? <Erreur message={erreur} /> : children}</main>
+      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">{erreur ? <Erreur message={erreur} /> : !options ? <AttenteServeur /> : children}</main>
     </div>
   );
 };

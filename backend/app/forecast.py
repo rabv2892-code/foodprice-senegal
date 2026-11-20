@@ -115,9 +115,21 @@ def _mois_futurs(dernier: pd.Timestamp, h: int) -> list[str]:
     return [str(p) for p in pd.period_range(dernier.to_period("M") + 1, periods=h, freq="M")]
 
 
+_CACHE: dict[tuple, dict[str, Any]] = {}
+
+
 def previsions(d: Donnees, produit: str | None, marche: str | None, horizon: int = HORIZON_PREVISION) -> dict[str, Any]:
+    """Prévision avec mémorisation : les données sont fixes, inutile de recalculer pour chaque visiteur
+    (au plus 11 produits × 6 portées × l'horizon : quelques dizaines d'entrées)."""
     produit = verifier_produit(d, produit)
     marche = verifier_marche(d, marche)
+    cle = (produit, marche, horizon)
+    if cle not in _CACHE:
+        _CACHE[cle] = _calculer_previsions(d, produit, marche, horizon)
+    return _CACHE[cle]
+
+
+def _calculer_previsions(d: Donnees, produit: str, marche: str | None, horizon: int) -> dict[str, Any]:
     portee = marche or f"Moyenne des {len(d.marches)} marchés"
     brute, y, comblés = _preparer_serie(d, produit, marche)
     n_obs = int(brute.notna().sum())

@@ -100,3 +100,41 @@ def test_exports():
     entete = csv.content.decode("utf-8-sig").splitlines()[0]
     assert entete.startswith("Date du relevé") and ";" in entete
     assert len(csv.content.decode("utf-8-sig").splitlines()) == len(D.prix) + 1
+
+
+def test_health_repond_et_confirme_les_donnees():
+    r = client.get("/health")
+    assert r.status_code == 200
+    j = r.json()
+    assert j["status"] == "ok" and j["marches"] == D.marches and j["produits"] == len(D.produits)
+
+
+def test_cors_autorise_uniquement_les_origines_configurees():
+    ok = client.get("/health", headers={"Origin": "http://localhost:5173"})
+    assert ok.headers.get("access-control-allow-origin") == "http://localhost:5173"
+    refuse = client.get("/health", headers={"Origin": "https://site-inconnu.example"})
+    assert "access-control-allow-origin" not in refuse.headers
+
+
+def test_erreur_interne_sans_details_techniques(monkeypatch):
+    def casse(*_a, **_k):
+        raise RuntimeError("secret interne /chemin/du/serveur")
+
+    monkeypatch.setattr("backend.app.routes.analysis.liste_options", casse)
+    r = TestClient(app, raise_server_exceptions=False).get("/api/options", headers={"Origin": "http://localhost:5173"})
+    assert r.status_code == 500
+    assert "secret interne" not in r.text and "Erreur interne" in r.json()["detail"]
+    assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
+def test_resultats_memorises_et_cles_bornees():
+    from backend.app import forecast, reports
+
+    a = client.get("/api/previsions", params={"produit": PRODUIT}).json()
+    b = client.get("/api/previsions", params={"produit": PRODUIT}).json()
+    assert a == b
+    avant = len(reports._FICHIERS)
+    for i in range(5):  # des marchés inventés n'ajoutent pas d'entrées
+        client.get("/api/export/excel", params={"produit": PRODUIT, "marche": f"Inconnu {i}"})
+    assert len(reports._FICHIERS) <= avant + 1
+    assert len(forecast._CACHE) <= len(D.produits) * (len(D.marches) + 1)

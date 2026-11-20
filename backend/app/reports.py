@@ -33,6 +33,16 @@ GRIS = "#64748B"
 COULEURS_MARCHES = ["#0B2A55", "#2563EB", "#38BDF8", "#94A3B8", "#0D9488"]
 
 
+_FICHIERS: dict[tuple, bytes] = {}
+
+
+def _memoriser(cle: tuple, fabriquer) -> bytes:
+    """Les données étant fixes, un même rapport n'est généré qu'une fois (économise mémoire et temps de calcul)."""
+    if cle not in _FICHIERS:
+        _FICHIERS[cle] = fabriquer()
+    return _FICHIERS[cle]
+
+
 def nom_fichier(produit: str, extension: str) -> str:
     """Nom de fichier français sans accents ni caractères spéciaux."""
     s = unicodedata.normalize("NFKD", produit).encode("ascii", "ignore").decode()
@@ -54,6 +64,11 @@ def export_csv(d: Donnees) -> bytes:
 # ---------------------------------------------------------------- Excel
 def export_excel(d: Donnees, produit: str | None, marche: str | None) -> bytes:
     produit = analysis.verifier_produit(d, produit)
+    marche = analysis.verifier_marche(d, marche)
+    return _memoriser(("excel", produit, marche), lambda: _construire_excel(d, produit, marche))
+
+
+def _construire_excel(d: Donnees, produit: str, marche: str | None) -> bytes:
     marches = analysis.marches_retenus(d)
     comp = analysis.comparaison_marches(d, produit)
     stat = analysis.etudes_statistiques(d, produit)
@@ -250,6 +265,10 @@ def _tableau(donnees: list[list[str]], largeurs: list[float] | None = None) -> T
 def export_pdf(d: Donnees, produit: str | None, marche: str | None) -> bytes:
     produit = analysis.verifier_produit(d, produit)
     marche = analysis.verifier_marche(d, marche)
+    return _memoriser(("pdf", produit, marche), lambda: _construire_pdf(d, produit, marche))
+
+
+def _construire_pdf(d: Donnees, produit: str, marche: str | None) -> bytes:
     marches = analysis.marches_retenus(d)
     dash = analysis.tableau_de_bord(d, produit)
     comp = analysis.comparaison_marches(d, produit)

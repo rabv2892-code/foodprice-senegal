@@ -27,6 +27,7 @@ francisation complète, puis la **simplification en projet universitaire limité
 17. [Limites connues et choix assumés](#17-limites-connues-et-choix-assumés)
 18. [Comment lancer, tester et reconstruire](#18-comment-lancer-tester-et-reconstruire)
 19. [Arborescence finale](#19-arborescence-finale)
+20. [Déploiement sur Render](#20-déploiement-sur-render)
 
 ---
 
@@ -279,7 +280,7 @@ backend/
 
 | Méthode | Chemin | Rôle |
 |---|---|---|
-| GET | `/api/sante` | État du serveur, marchés, nombre de produits et de mois |
+| GET | `/health` | Vérification de disponibilité (utilisée par Render) : état, marchés, nombre de produits et de mois |
 | GET | `/api/options` | Produits, marché, premier et dernier mois, unité |
 | GET | `/api/marches` | Les 5 marchés, critère de sélection, totaux de relevés |
 | GET | `/api/tableau-de-bord?produit=` | 4 indicateurs + données des 3 premiers graphiques |
@@ -584,3 +585,80 @@ Foodprice/
 
 Le dossier `archive_version_complete/` peut être supprimé sans conséquence pour la version actuelle.
 Si les données traitées doivent être régénérées à partir des fichiers bruts, utiliser `scripts/audit_and_prepare.py`.
+
+---
+
+## 20. Déploiement sur Render
+
+### 20.1 Architecture de production (fichier `render.yaml`)
+
+| Service | Type | Détails |
+|---|---|---|
+| `foodprice-senegal-api` | Web Service Python (offre gratuite, région Francfort) | `pip install -r backend/requirements.txt`, démarrage `uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT`, contrôle de santé `/health` |
+| `foodprice-senegal` | Static Site | dossier `frontend`, `npm install && npm run build`, publication de `dist`, réécriture `/*` vers `/index.html` (rechargement des pages), en-têtes de sécurité |
+
+Adresses attendues (si les noms sont libres) :
+- site : `https://foodprice-senegal.onrender.com`
+- API : `https://foodprice-senegal-api.onrender.com`
+
+### 20.2 Variables d'environnement (aucun secret)
+
+| Service | Variable | Valeur | Rôle |
+|---|---|---|---|
+| API | `PYTHON_VERSION` | `3.13.5` | Version de Python |
+| API | `ENVIRONNEMENT` | `production` | Désactive `/docs`, `/redoc`, `/openapi.json` ; masque les détails des erreurs |
+| API | `CORS_ORIGINS` | adresse du site | Seule origine autorisée à appeler l'API |
+| API | `CORS_ORIGIN_REGEX` | `^https://foodprice-senegal[a-z0-9-]*\.onrender\.com$` | Couvre un suffixe ajouté par Render au nom du site |
+| Site | `NODE_VERSION` | `22` | Version de Node |
+| Site | `VITE_API_URL` | adresse publique de l'API | Intégrée au site à la construction |
+
+Aucun mot de passe, clé ou jeton n'existe dans le projet (les données sont publiques et l'API est en lecture seule).
+En développement local, `VITE_API_URL` est vide (les appels passent par le même serveur ou par le proxy de Vite), et
+l'adresse locale n'est autorisée par CORS que lorsque `ENVIRONNEMENT` n'est pas `production`.
+
+### 20.3 Modifications apportées pour la production
+
+- **Backend** : route `/health` ; CORS configurable ; documentation interactive désactivée en production ;
+  middleware qui capte toute erreur inattendue et renvoie un message français sans trace technique (avec les en-têtes CORS) ;
+  chargement des données au démarrage ; mémorisation des prévisions et des rapports PDF/Excel (clés bornées : un marché
+  inventé dans l'adresse n'ajoute aucune entrée).
+- **Dépendances** : `backend/requirements.txt` ne contient plus que les 9 bibliothèques réellement utilisées, avec les
+  versions exactes testées (suppression de Prophet et scikit-learn, lourds et inutiles) ; `requirements-dev.txt` ajoute pytest, httpx, pypdf.
+- **Frontend** : adresse de l'API lue dans `VITE_API_URL` ; délai maximal de 90 s ; jusqu'à 3 tentatives (pause de 5 s)
+  si le serveur répond 502/503/504 ou est injoignable ; message « Le serveur est en train de démarrer… » après 4 s d'attente
+  (un serveur gratuit endormi met environ une minute à se réveiller) ; message d'erreur français clair ensuite.
+- **Données** : `data/processed/wfp_prices_clean.csv` (0,8 Mo) est le seul fichier lu par l'application ; il est dans le dépôt Git,
+  donc présent sur le serveur. Les trois sources originales (`data/raw`, 27 Mo) sont aussi dans le dépôt et ne sont jamais modifiées.
+
+### 20.4 Mémoire et performances (mesures locales)
+
+| Situation | Mémoire du serveur |
+|---|---|
+| Au repos (données chargées) | ≈ 87 Mo |
+| Après analyses et prévisions | ≈ 87 Mo |
+| Après génération de PDF/Excel | ≈ 120 à 235 Mo (stable après de nombreuses générations) |
+
+L'offre gratuite de Render offre 512 Mo : la marge est suffisante. Génération d'un PDF : environ 2 s (puis instantané grâce à la mémorisation).
+
+### 20.5 Tests avant déploiement
+
+- Installation **propre** (nouvel environnement virtuel) des seules dépendances de production, avec une copie du backend contenant
+  uniquement le fichier de données nécessaire (comme sur Render) : démarrage réussi, `/health` = 200, `/docs` = 404, CORS accepté pour
+  l'adresse du site et refusé pour une autre.
+- Site construit avec `VITE_API_URL` pointant vers cette API séparée, puis ouvert dans le navigateur : les six pages se chargent,
+  le changement de produit met à jour les graphiques, les prévisions s'affichent, les liens PDF/Excel/CSV pointent vers l'API et
+  les trois téléchargements répondent (PDF 318 Ko, Excel 30 Ko, CSV 47 Ko).
+- API arrêtée volontairement : le site affiche d'abord le message de démarrage puis, après les tentatives, « Impossible de joindre le serveur… ».
+- Tests automatiques : 16 tests backend, 8 tests frontend ; `tsc` sans erreur ; `npm run build` réussi.
+
+### 20.6 Mises en ligne et mises à jour
+
+```powershell
+git add -A
+git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Description de la modification"
+git push
+```
+
+Render redéploie automatiquement les deux services à chaque `git push` sur la branche `main`.
+Si Render donne à l'API une adresse différente de celle attendue, modifier `VITE_API_URL` dans l'onglet *Environment* du site,
+puis lancer *Manual Deploy → Deploy latest commit*.

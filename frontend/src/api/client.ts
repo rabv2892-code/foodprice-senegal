@@ -176,27 +176,49 @@ export interface Previsions {
   interpretation?: string;
 }
 
+// Adresse publique de l'API : variable VITE_API_URL définie à la construction du site (voir render.yaml).
+// Vide en développement et en usage local « tout-en-un » : les appels passent alors par le même serveur.
+const BASE_API = ((import.meta.env.VITE_API_URL as string | undefined) ?? "").trim().replace(/\/+$/, "");
+
+/** Réglages des appels : un serveur gratuit endormi peut mettre jusqu'à une minute à se réveiller. */
+export const reglages = { tentatives: 3, delaiEntreTentatives: 5000, delaiMaximal: 90000 };
+
+const attendre = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export async function obtenir<T>(chemin: string, parametres: Record<string, string | null | undefined> = {}): Promise<T> {
   const q = new URLSearchParams();
   Object.entries(parametres).forEach(([cle, valeur]) => {
     if (valeur) q.set(cle, valeur);
   });
-  const url = `/api/${chemin}${q.toString() ? `?${q}` : ""}`;
-  let reponse: Response;
-  try {
-    reponse = await fetch(url);
-  } catch {
-    throw new Error("Impossible de joindre le serveur. Vérifiez qu'il est démarré, puis réessayez.");
+  const url = `${BASE_API}/api/${chemin}${q.toString() ? `?${q}` : ""}`;
+
+  let derniereErreur = "Impossible de joindre le serveur. Vérifiez votre connexion, puis réessayez.";
+  for (let essai = 1; essai <= reglages.tentatives; essai++) {
+    const arret = new AbortController();
+    const minuteur = setTimeout(() => arret.abort(), reglages.delaiMaximal);
+    try {
+      const reponse = await fetch(url, { signal: arret.signal });
+      if (reponse.ok) return (await reponse.json()) as T;
+      derniereErreur = `Le serveur a renvoyé une erreur (code ${reponse.status}). Veuillez réessayer.`;
+      // Erreurs 4xx : inutile de recommencer ; 502/503/504 : le serveur est probablement en train de démarrer.
+      if (![502, 503, 504].includes(reponse.status)) throw new Error(derniereErreur);
+    } catch (e) {
+      if (e instanceof Error && e.message === derniereErreur) throw e;
+      derniereErreur =
+        e instanceof DOMException && e.name === "AbortError"
+          ? "Le serveur met trop de temps à répondre. Veuillez réessayer dans un instant."
+          : "Impossible de joindre le serveur. Vérifiez votre connexion, puis réessayez.";
+    } finally {
+      clearTimeout(minuteur);
+    }
+    if (essai < reglages.tentatives) await attendre(reglages.delaiEntreTentatives);
   }
-  if (!reponse.ok) {
-    throw new Error(`Le serveur a renvoyé une erreur (code ${reponse.status}). Veuillez réessayer.`);
-  }
-  return (await reponse.json()) as T;
+  throw new Error(derniereErreur);
 }
 
 export function lienExport(type: "pdf" | "excel" | "csv", produit?: string, marche?: string | null): string {
   const q = new URLSearchParams();
   if (produit) q.set("produit", produit);
   if (marche) q.set("marche", marche);
-  return `/api/export/${type}${q.toString() ? `?${q}` : ""}`;
+  return `${BASE_API}/api/export/${type}${q.toString() ? `?${q}` : ""}`;
 }

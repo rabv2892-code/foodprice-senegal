@@ -1,7 +1,57 @@
+# Blueprint Render — FOODPRICE SENEGAL
+# Deux services : l'API Python (FastAPI) et le site statique (React + Vite).
+# Aucun secret n'est nécessaire (données publiques, API en lecture seule) ; la configuration passe par des variables d'environnement.
+
 services:
+  # ------------------------------------------------------------------ API (backend)
+  - type: web
+    name: foodprice-senegal-api
+    runtime: python
+    plan: free
+    region: frankfurt            # région européenne la plus proche du Sénégal
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: ENVIRONNEMENT
+        value: production        # désactive /docs et masque les détails techniques des erreurs
+      # Adresse du site autorisée à appeler l'API (CORS). L'expression régulière couvre aussi un nom
+      # de site légèrement différent si Render ajoute un suffixe (ex. foodprice-senegal-x7k2).
+      - key: CORS_ORIGINS
+        value: https://foodprice-senegal.onrender.com
+      - key: CORS_ORIGIN_REGEX
+        value: ^https://foodprice-senegal[a-z0-9-]*\.onrender\.com$
+
+  # ------------------------------------------------------------------ Site (frontend)
   - type: web
     name: foodprice-senegal
-    runtime: docker
-    plan: free
-    healthCheckPath: /api/sante
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      # Adresse publique de l'API, intégrée au site lors de la construction.
+      # Si Render a donné une autre adresse à l'API, la modifier ici (Environment) puis redéployer le site.
+      - key: VITE_API_URL
+        value: https://foodprice-senegal-api.onrender.com
+    routes:
+      # Application monopage : toute adresse non-fichier renvoie vers index.html (ex. /previsions rechargée).
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
